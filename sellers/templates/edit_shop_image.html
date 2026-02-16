@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-4">
+  <h2>Edit Image</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a href="{% url 'my_shop' seller_id=image.shop.seller.sellerprofile.id %}" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+{% endblock %}

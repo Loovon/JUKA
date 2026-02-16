@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="offer-card">
+  <h2>Special Offer: {{ offer.code }}</h2>
+  <p>{{ offer.description }}</p>
+  <strong>Discount: {{ offer.discount }}%</strong>
+  <br><br>
+  <a href="{% url 'notifications' %}" class="btn btn-secondary">← Back to Notifications</a>
+</div>
+
+<style>
+.offer-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+</style>
+{% endblock %}

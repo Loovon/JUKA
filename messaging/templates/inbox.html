@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="inbox-title">Inbox</h2>
+
+<div class="chat-list">
+    {% for msg in messages %}
+        {% if msg.advert %}
+            <a href="{% if msg.sender == request.user %}
+                        {% url 'conversation' msg.receiver.id msg.advert.id %}
+                     {% else %}
+                        {% url 'conversation' msg.sender.id msg.advert.id %}
+                     {% endif %}"
+               class="chat-item {% if not msg.is_read %}unread{% endif %}">
+        {% else %}
+            <a href="#" class="chat-item {% if not msg.is_read %}unread{% endif %}">
+        {% endif %}
+
+            <div class="chat-avatar">
+                <div class="avatar-circle">
+                    {% if msg.sender == request.user %}
+                        {{ msg.receiver.username|first|upper }}
+                    {% else %}
+                        {{ msg.sender.username|first|upper }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="chat-info">
+                <div class="chat-header">
+                    <strong>
+                        {% if msg.sender == request.user %}
+                            {{ msg.receiver.username }}
+                        {% else %}
+                            {{ msg.sender.username }}
+                        {% endif %}
+                    </strong>
+                    <span class="chat-time">{{ msg.timestamp|date:"H:i" }}</span>
+                </div>
+                <p class="chat-preview">
+                    {% if msg.advert %}
+                        <strong>{{ msg.advert.title }}</strong>: {{ msg.content|truncatechars:40 }}
+                    {% else %}
+                        {{ msg.content|truncatechars:40 }}
+                    {% endif %}
+                </p>
+            </div>
+        </a>
+    {% empty %}
+        <p>No messages yet.</p>
+    {% endfor %}
+</div>
+
+<style>
+    .inbox-title {
+        margin-bottom: 15px;
+    }
+
+    .chat-list {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.2s;
+    }
+    .chat-item:hover {
+        background: #f5f5f5;
+    }
+
+    .chat-avatar {
+        margin-right: 12px;
+    }
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    .chat-info {
+        flex: 1;
+    }
+    .chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .chat-preview {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+    }
+    .chat-time {
+        font-size: 12px;
+        color: #aaa;
+    }
+
+    /* Unread messages */
+    .chat-item.is_read {
+        background-color:#e6f7ff; /* light blue for unread */
+        font-weight: bold;
+    }
+
+    .chat-item.is_read .chat-preview {
+        color: #000; /* darker text for preview of unread */
+    }
+
+</style>
+{% endblock %}

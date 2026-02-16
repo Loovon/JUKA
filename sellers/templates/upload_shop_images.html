@@ -1,0 +1,17 @@
+<!-- templates/upload_shop_images.html -->
+{% extends "base.html" %}
+{% block title %}Upload Shop Images{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2>Upload Images for {{ shop.shop_name }}</h2>
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <p>
+        <label for="id_image">Select image(s):</label>
+        <input type="file" name="image" id="id_image" multiple>
+    </p>
+    <button type="submit" class="btn btn-primary">Upload</button>
+</form>
+</div>
+{% endblock %}

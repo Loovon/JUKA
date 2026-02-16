@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-warning text-white text-center">
+                    <h4 class="mb-0">Set Up Your Seller Profile</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Store Name</label>
+                            {{ form.store_name }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Store Description</label>
+                            {{ form.store_description }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            {{ form.address }}
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                        </div>
+                        <button type="submit" class="btn btn-warning w-100">Save & Continue</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <small class="text-muted">By becoming a seller, you agree to our terms & conditions.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

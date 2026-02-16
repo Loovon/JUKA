@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}{{ shop.shop_name }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+    <!-- Shop Header -->
+    <div class="card shadow-lg p-4 mb-4">
+        <div class="d-flex align-items-center">
+            {% if shop.images.all %}
+            <img src="{{ shop.images.first.image.url }}"
+                 class="rounded me-3" width="80" height="80" alt="{{ shop.shop_name }}">
+            {% else %}
+            <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded-circle me-3"
+                 style="width:80px;height:80px;">
+                <h3>{{ shop.shop_name|slice:":1" }}</h3>
+            </div>
+            {% endif %}
+            {% if shop.banner %}
+            <div class="position-relative">
+                <img src="{{ shop.banner.url }}" class="w-100 rounded-top" style="height:120px;object-fit:cover;"
+                     alt="{{ shop.shop_name }} banner">
+                <div class="position-absolute bottom-0 start-0 p-3 d-flex align-items-center bg-dark bg-opacity-50 rounded-end">
+                    {% if shop.logo %}
+                    <img src="{{ shop.logo.url }}" class="rounded-circle border border-white me-3"
+                         width="25" height="25" alt="{{ shop.shop_name }} logo"
+                         style="object-fit:cover;">
+                    {% endif %}
+                    <div>
+                        <h2 class="mb-0">{{ shop.shop_name }}</h2>
+                        <small class="text-muted">{{ shop.description }}</small>
+                        <div class="mt-2">
+                            {% if shop.rank == "verified" %}
+                            <span class="badge bg-info"><i class="fas fa-check-circle"></i> Verified</span>
+                            {% elif shop.rank == "pro" %}
+                            <span class="badge bg-success"><i class="fas fa-star"></i> Pro</span>
+                            {% else %}
+                            <span class="badge bg-warning"><i class="fas fa-user"></i> Hustler</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="d-flex align-items-center p-4">
+                {% if shop.logo %}
+                <img src="{{ shop.logo.url }}" class="rounded-circle me-3"
+                     width="80" height="80" alt="{{ shop.shop_name }} logo">
+                {% endif %}
+                <div>
+                    <h2 class="mb-0">{{ shop.shop_name }}</h2>
+                    <small class="text-muted">{{ shop.description }}</small>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Sidebar (only for shop owner) -->
+
+    {% if is_owner %}
+    <div class="mb-4">
+        <a href="{% url 'create_advert' %}" class="btn btn-primary">+ Add New Advert</a>
+        <a href="{% url 'upload_shop_images' shop.id %}" class="btn btn-outline-secondary">
+            Upload Shop Images
+        </a>
+        <a href="{% url 'performance' seller_id=request.user.id %}" class="btn btn-outline-dark">
+            View Analytics
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Shop Images Carousel -->
+    {% if shop.images.all %}
+    <div id="shopCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            {% for img in shop.images.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                <img src="{{ img.image.url }}" class="d-block w-100 rounded"
+                     style="max-height:400px;object-fit:cover;">
+
+                {% if is_owner %}
+                <div class="mt-2 text-center">
+                    <a href="{% url 'edit_shop_image' img.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <form action="{% url 'delete_shop_image' img.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#shopCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#shopCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
+    </div>
+    {% endif %}
+
+    <!-- Google Maps (only visible if shop has location & rank allows) -->
+    {% if shop.location and shop.rank != "hustler" %}
+    <iframe width="100%" height="300" style="border:0"
+            src="https://www.google.com/maps?q={{ shop.location|urlencode }}&output=embed">
+    </iframe>
+    {% endif %}
+
+    <!-- Shop Adverts -->
+    <hr>
+    <h4 class="mt-4">Shop Adverts</h4>
+    <div class="row">
+        {% for advert in shop.adverts.all %}
+        <div class="col-md-4">
+            <a href="{% url 'product_detail' advert.id %}" class="text-decoration-none text-dark">
+                <div class="card mb-3 shadow-sm">
+                    <img src="{{ advert.image.url }}" class="card-img-top" alt="{{ advert.title }}">
+                    <div class="card-body">
+                        <h5>{{ advert.title }}</h5>
+                        <p class="text-danger fw-bold">KSh {{ advert.price }}</p>
+                        <a href="{% url 'product_detail' advert.pk %}" class="btn btn-sm btn-danger">View</a>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <p>No adverts yet.</p>
+        {% endfor %}
+    </div>
+    <hr>
+    <h4 class="mt-4">Customer Reviews</h4>
+
+    {% if reviews %}
+    {% for review in reviews %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body d-flex">
+            <!-- Small advert image -->
+            {% if review.advert.image %}
+            <img src="{{ review.advert.image.url }}" alt="{{ review.advert.title }}"
+                 class="me-3 rounded" style="width:60px; height:60px; object-fit:cover;">
+            {% endif %}
+
+            <div>
+                <h5 class="card-title mb-1">
+                    <a href="{% url 'product_detail' review.advert.id %}" class="text-decoration-none">
+                        {{ review.advert.title }}
+                    </a>
+                </h5>
+                <h6 class="text-muted mb-1">
+                    By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}
+                </h6>
+                <p class="text-warning mb-1">
+                    {% for i in "12345"|make_list %}
+                    {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                </p>
+                <p class="mb-0">{{ review.comment }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No reviews yet for this shop.</p>
+    {% endif %}
+
+</div>
+{% endblock %}

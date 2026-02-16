@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit Advert - {{ advert.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-3">✏ Edit Advert</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      {{ advert.title }}
+    </div>
+    <div class="card-body">
+      <!-- Small preview of advert -->
+      <div class="mb-3 d-flex align-items-center">
+        {% if advert.image %}
+          <img src="{{ advert.image.url }}"
+               alt="{{ advert.title }}"
+               class="rounded me-3"
+               style="width:80px; height:80px; object-fit:cover;">
+        {% else %}
+          <div class="bg-light border rounded d-flex align-items-center justify-content-center"
+               style="width:80px; height:80px;">
+            <span class="text-muted">No image</span>
+          </div>
+        {% endif %}
+        <span class="fw-bold">{{ advert.title }}</span>
+      </div>
+
+      <!-- Edit form -->
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="d-flex justify-content-between">
+          <a href="{% url 'my_adverts' %}" class="btn btn-outline-secondary">⬅ Back</a>
+          <button type="submit" class="btn btn-success">💾 Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

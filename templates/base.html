@@ -1,0 +1,471 @@
+{% load static %}
+{% load socialaccount %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}JUKA{% endblock %}</title>
+
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+    <link rel="preload" as="image" href="{% static 'slide1.jpeg' %}">
+    <link rel="preload" as="image" href="{% static 'slide2.jpeg' %}">
+    <link rel="preload" as="image" href="{% static 'slide3.jpeg' %}">
+    <link rel="preload" as="image" href="{% static 'slide4.jpeg' %}">
+    <link rel="preload" as="image" href="{% static 'slide5.jpeg' %}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+
+</head>
+<body>
+
+<!-- Navbar -->
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+    <div class="container-fluid">
+
+        <!-- Logo -->
+        <a class="navbar-brand fw-bold text-primary d-flex align-items-center" href="{% url 'home' %}">
+            <img src="{% static 'logo.png' %}" alt="Logo" width="40" class="me-2"> JUKA
+        </a>
+
+        <!-- Toggle button (mobile) -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Navbar Content -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <!-- Left icons -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center">
+                <li class="nav-item mx-2">
+                    <a class="nav-link" href="{% url 'home' %}" title="Home">
+                        <i class="fas fa-home fa-lg"></i>
+                    </a>
+                </li>
+                <li class="nav-item mx-2">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'notifications' %}" title="Notifications">
+                        <i class="fas fa-bell fa-lg"></i>
+                        <span class="badge bg-danger rounded-circle notif-badge notif-badge-bell"
+                              style="display: {% if unread_notifications > 0 %}inline{% else %}none{% endif %}">
+                            {{ unread_notifications }}
+                        </span>
+                    </a>
+                    {% else %}
+                    <a class="nav-link require-login"
+                       href="{% url 'notifications' %}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#loginModal"
+                       title="Notifications">
+                        <i class="fas fa-bell fa-lg"></i>
+                    </a>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item mx-2">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'saved_items' %}" title="Saved Items">
+                        <i class="fas fa-heart fa-lg"></i>
+                    </a>
+                    {% else %}
+                    <a class="nav-link require-login"
+                       href="{% url 'saved_items' %}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#loginModal"
+                       title="Saved Items">
+                        <i class="fas fa-heart fa-lg"></i>
+                    </a>
+                    {% endif %}
+                </li>
+
+                <li class="nav-item mx-2">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link" href="{% url 'inbox' %}" title="Messages">
+                        <i class="fas fa-envelope fa-lg"></i>
+                        <span class="badge bg-danger rounded-circle notif-badge notif-badge-msg"
+                              style="display: none;">0</span>
+                    </a>
+                    {% else %}
+                    <a class="nav-link require-login"
+                       href="{% url 'inbox' %}"
+                       data-bs-toggle="modal"
+                       data-bs-target="#loginModal"
+                       title="Messages">
+                        <i class="fas fa-envelope fa-lg"></i>
+                    </a>
+                    {% endif %}
+                </li>
+
+            </ul>
+
+            <!-- Search bar -->
+            <form class="d-flex mx-auto w-50" method="get" action="{% url 'search' %}">
+                <input class="form-control me-2" type="search" placeholder="Search products..." aria-label="Search">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <!-- Profile + Sell -->
+            <ul class="navbar-nav ms-auto d-flex align-items-center">
+
+                <!-- Profile Dropdown -->
+                <li class="nav-item dropdown d-flex align-items-center">
+                    {% if user.is_authenticated %}
+                    <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                             class="rounded-circle me-2" width="32" height="32" alt="profile">
+                        <span>{{ user.first_name }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                        {% if user.is_seller %}
+                        <li>
+                            <a class="dropdown-item" href="{% url 'my_shop' seller_id=request.user.sellerprofile.id %}">My
+                                Shop</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'my_adverts' %}">My Adverts</a></li>
+                        <li><a class="dropdown-item" href="{% url 'feedback' %}">Feedback</a></li>
+                        <li><a class="dropdown-item" href="{% url 'performance' seller_id=request.user.id %}">Performance</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+                        {% endif %}
+
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="btn btn-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                    {% else %}
+                    <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        Login
+                    </button>
+                    {% endif %}
+                </li>
+
+                <!-- Sell Button -->
+                <li class="nav-item ms-3">
+                    {% if user.is_authenticated %}
+                    {% if user.sellerprofile %}
+                    <!-- User is a seller: go to create advert -->
+                    <a href="{% url 'create_advert' %}" class="btn btn-danger">
+                        <i class="fas fa-plus-circle"></i> Sell
+                    </a>
+                    {% else %}
+                    <!-- User logged in but not a seller: go to seller setup -->
+                    <a href="{% url 'setup_seller_profile' %}" class="btn btn-danger">
+                        <i class="fas fa-plus-circle"></i> Sell
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <!-- Guest: open login modal -->
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#loginModal">
+                        <i class="fas fa-plus-circle"></i> Sell
+                    </button>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<div class="modal fade" id="loginModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <a href="{% url 'account_login' %}?next="
+                   id="login-next-link" class="btn btn-primary w-100 mb-2">
+                    <i class="fas fa-user"></i> Login with Username & Password
+                </a>
+                <a href="{% provider_login_url 'google' %}?next="
+                   id="google-login-next" class="btn btn-danger w-100">
+                    <i class="fab fa-google"></i> Continue with Google
+                </a>
+                <p class="mt-3 small">Don't have an account?
+                    <a href="{% url 'account_signup' %}">Register here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const next = sessionStorage.getItem("login_next") || "/";
+        const loginLink = document.getElementById("login-next-link");
+        const googleLink = document.getElementById("google-login-next");
+
+        if (loginLink) loginLink.href += encodeURIComponent(next);
+        if (googleLink) googleLink.href += encodeURIComponent(next);
+    });
+</script>
+
+<!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Logout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to log out?
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="{% url 'account_logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Yes, Logout</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="{% if show_sidebar %}layout-with-sidebar{% else %}layout-fullwidth{% endif %}">
+    {% if show_sidebar %}
+    <!-- Sidebar -->
+    {% if request.resolver_match.url_name == "my_shop" and request.user == shop.seller %}
+    <div class="category-sidebar">
+        <h4>My Shop</h4>
+        <p><strong>{{ shop.name }}</strong></p>
+
+        <a href="{% url 'settings' %}">⚙️ Shop Settings</a>
+        <br>
+        <a href="{% url 'performance' shop.seller.id %}">📊 Performance</a>
+        <br>
+        <a href="{% url 'feedback' %}" class="btn btn-sm btn-outline-primary w-100">See Reviews</a>
+
+        <hr>
+
+        <h5>My Adverts</h5>
+        {% if adverts %}
+        <ul>
+            {% for advert in adverts %}
+            <li>
+                <a href="{% url 'product_detail' advert.id %}">
+                    {{ advert.title }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No adverts yet.</p>
+        <a href="{% url 'create_advert' %}">+ Add Advert</a>
+        {% endif %}
+        <hr>
+
+    </div>
+
+
+    {% elif request.resolver_match.url_name == "product_detail" %}
+    <h5 class="mb-3">Filter Products</h5>
+    <form method="get" action="">
+        <label class="form-label">Price Range</label>
+        <input type="number" name="min_price" class="form-control mb-2" placeholder="Min">
+        <input type="number" name="max_price" class="form-control mb-2" placeholder="Max">
+        <button class="btn btn-danger w-100">Apply</button>
+    </form>
+    {% elif request.resolver_match.url_name == "my_adverts" %}
+    <div class="category-sidebar">
+        <h5 class="category-sidebar-title">Manage Adverts</h5>
+        <ul class="category-sidebar-list">
+            <li>
+                <a href="{% url 'create_advert' %}"
+                   class="{% if request.resolver_match.url_name == 'create_advert' %}active{% endif %}">
+                    ➕ New Advert
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'my_adverts' %}"
+                   class="{% if not status %}active{% endif %}">
+                    📋 All
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'my_adverts' %}?status=active"
+                   class="{% if status == 'active' %}active{% endif %}">
+                    ✅ Active
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'my_adverts' %}?status=draft"
+                   class="{% if status == 'draft' %}active{% endif %}">
+                    📝 Drafts
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% else %}
+    {% if request.resolver_match.url_name == "home" %}
+    <div class="category-sidebar">
+        <h5 class="category-sidebar-title">Categories</h5>
+        <ul class="category-sidebar-list">
+            {% for category in categories %}
+            <li>
+                <a href="{% url 'product_list_by_category' category.slug %}">{{ category.name }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <div class="category-sidebar">
+        <h5 class="category-sidebar-title">Filter Products</h5>
+        <form method="get" action="">
+            <!-- Price Range -->
+            <label class="form-label">Price Range</label>
+            <input type="number" name="min_price" class="form-control mb-2" placeholder="Min">
+            <input type="number" name="max_price" class="form-control mb-2" placeholder="Max">
+
+            {% if sizes %}
+            <label class="form-label">Size</label>
+            <select name="size" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for s in sizes %}
+                <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if colors %}
+            <label class="form-label">Color</label>
+            <select name="color" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for c in colors %}
+                <option value="{{ c }}">{{ c }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if thicknesses %}
+            <label class="form-label">Thickness</label>
+            <select name="thickness" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for t in thicknesses %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if types %}
+            <label class="form-label">Type</label>
+            <select name="type" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for t in types %}
+                <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if weights %}
+            <label class="form-label">Weight</label>
+            <select name="weight" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for w in weights %}
+                <option value="{{ w }}">{{ w }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            {% if shapes %}
+            <label class="form-label">Shape</label>
+            <select name="shape" class="form-control mb-2">
+                <option value="">--Any--</option>
+                {% for s in shapes %}
+                <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+            {% endif %}
+
+            <button class="btn btn-danger w-100">Apply</button>
+        </form>
+    </div>
+    {% endif %}
+    {% endif %}
+    {% endif %}
+
+    <div class="main-content container">
+        <div class="row">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Bootstrap JS Bundle (with Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'main.js' %}"></script>
+{% if user.is_authenticated %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        function updateUnreadCounts() {
+            fetch("{% url 'get_unread_counts' %}", {
+                headers: { "X-Requested-With": "XMLHttpRequest" }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const msgBadge = document.querySelector('.notif-badge-msg');
+                const notifBadge = document.querySelector('.notif-badge-bell');
+
+                // 🔔 Notifications
+                if (notifBadge) {
+                    if (data.unread_notifications > 0) {
+                        notifBadge.textContent = data.unread_notifications;
+                        notifBadge.style.display = 'inline-block';
+                    } else {
+                        notifBadge.style.display = 'none';
+                    }
+                }
+
+                // 💬 Messages
+                if (msgBadge) {
+                    if (data.unread_messages > 0) {
+                        msgBadge.textContent = data.unread_messages;
+                        msgBadge.style.display = 'inline-block';
+                    } else {
+                        msgBadge.style.display = 'none';
+                    }
+                }
+            })
+            .catch(error => console.error("Error fetching unread counts:", error));
+        }
+
+        // initial load + refresh every 5 seconds
+        updateUnreadCounts();
+        setInterval(updateUnreadCounts, 5000);
+    });
+</script>
+{% endif %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".require-login").forEach(link => {
+            link.addEventListener("click", function () {
+                const nextUrl = this.getAttribute("href");
+                sessionStorage.setItem("login_next", nextUrl);
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

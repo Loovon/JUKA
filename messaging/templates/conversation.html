@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="chat-header flex items-center space-x-2">
+    <a href="{% url 'inbox' %}" class="back-btn text-xl">
+        <i class="fa fa-arrow-left"></i>
+    </a>
+    <h2 class="text-lg font-semibold">Chat with {{ other_user.username }}</h2>
+</div>
+<!-- Product being discussed -->
+<div class="mb-3 p-2 border rounded bg-light d-flex align-items-center">
+    {% if advert.image %}
+    <img src="{{ advert.image.url }}"
+         alt="{{ advert.title }}"
+         style="width:60px;height:60px;object-fit:cover;border-radius:8px;margin-right:10px;">
+    {% endif %}
+    <div>
+        <strong>{{ advert.title }}</strong><br>
+        <small class="text-muted">Ksh {{ advert.price }}</small>
+    </div>
+</div>
+
+<div class="chat-box">
+    {% for msg in messages %}
+    <div class="message {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+        <p>{{ msg.content }}</p>
+        <small>{{ msg.timestamp|date:"H:i" }}</small>
+    </div>
+    {% endfor %}
+</div>
+
+<form method="post" class="chat-input">
+    {% csrf_token %}
+    <textarea name="content" rows="2" placeholder="Type your message..."></textarea>
+    <button type="submit">Send</button>
+</form>
+
+
+<style>
+    .chat-box {
+        border: 1px solid #ddd;
+        padding: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        background: #f9f9f9;
+    }
+
+    .message {
+        margin: 5px 0;
+        padding: 8px 12px;
+        border-radius: 12px;
+        max-width: 60%;
+    }
+
+    .message.sent {
+        background: #007bff;
+        color: white;
+        margin-left: auto;
+        text-align: right;
+    }
+
+    .message.received {
+        background: #e5e5ea;
+        color: black;
+        margin-right: auto;
+    }
+
+    .chat-input {
+        display: flex;
+        margin-top: 10px;
+    }
+
+    .chat-input textarea {
+        flex: 1;
+        resize: none;
+        padding: 8px;
+    }
+
+    .chat-input button {
+        margin-left: 5px;
+    }
+
+    .back-btn {
+        font-size: 22px;
+        color: #333;
+        margin-right: 12px;
+        text-decoration: none;
+    }
+
+    .back-btn:hover {
+        color: #007bff;
+    }
+
+    .chat-header {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        padding: 8px 12px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .back-btn {
+        font-size: 1.2rem;
+        color: #333;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .back-btn:hover {
+        color: #007bff;
+    }
+
+    .chat-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #5a2d0c; /* matches your brown theme */
+    }
+</style>
+{% endblock %}

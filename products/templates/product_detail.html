@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+{% block title %}{{ advert.title }}{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<div class="product-hero position-relative text-center mb-5">
+
+    {% if variants.exists %}
+    <!-- Carousel -->
+    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <!-- Main Advert Image -->
+            <div class="carousel-item active">
+                <img src="{{ advert.image.url }}"
+                     class="img-fluid w-100"
+                     alt="{{ advert.title }}"
+                     style="max-height: 450px; object-fit: contain; background:#f8f9fa;">
+            </div>
+            <!-- Variant Images -->
+            {% for variant in variants %}
+            <div class="carousel-item">
+                <img src="{{ variant.image.url }}"
+                     class="img-fluid w-100"
+                     alt="{{ advert.title }} - {{ variant.color }} {{ variant.type }}"
+                     style="max-height: 450px; object-fit: contain; background:#f8f9fa;">
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Controls -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel"
+                data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bg-dark rounded-circle p-2"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel"
+                data-bs-slide="next">
+            <span class="carousel-control-next-icon bg-dark rounded-circle p-2"></span>
+        </button>
+    </div>
+    {% else %}
+    <!-- Single Image -->
+    <img src="{{ advert.image.url }}"
+         class="img-fluid w-100"
+         alt="{{ advert.title }}"
+         style="max-height: 450px; object-fit: contain; background:#f8f9fa;">
+    {% endif %}
+
+    <!-- Overlay (shared for both carousel and single image) -->
+    <div class="hero-overlay position-absolute bottom-0 start-50 translate-middle-x
+                text-white bg-dark bg-opacity-75 p-3 rounded-top w-100">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1">{{ advert.title }}</h3>
+                <h4 class="text-warning">KSh {{ advert.price }}</h4>
+            </div>
+            <div class="d-flex gap-2">
+                {% if user.is_authenticated %}
+                {% if advert.id in user_saved_ids %}
+                <a href="{% url 'save_item' advert.id %}" class="btn btn-sm btn-outline-danger">
+                    <i class="fas fa-heart text-danger"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'save_item' advert.id %}" class="btn btn-sm btn-outline-danger">
+                    <i class="far fa-heart"></i>
+                </a>
+                {% endif %}
+                {% else %}
+                <a href="{% url 'save_item' advert.id %}"
+                   class="btn btn-sm btn-outline-danger require-login"
+                   data-bs-toggle="modal"
+                   data-bs-target="#loginModal">
+                    <i class="far fa-heart"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row g-4">
+        <!-- Left: Product Details -->
+        <div class="col-md-8">
+            <h4>Description</h4>
+            <p>{{ advert.description }}</p>
+
+            <h5 class="mt-4">Product Attributes</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Category:</strong> {{ advert.category.name }}</li>
+                {% if advert.type %}
+                <li class="list-group-item"><strong>Type:</strong> {{ advert.type }}</li>
+                {% endif %}
+                {% if advert.size %}
+                <li class="list-group-item"><strong>Size:</strong> {{ advert.size }}</li>
+                {% endif %}
+                {% if advert.thickness %}
+                <li class="list-group-item"><strong>Thickness:</strong> {{ advert.thickness }}</li>
+                {% endif %}
+                {% if advert.color %}
+                <li class="list-group-item"><strong>Color:</strong> {{ advert.color }}</li>
+                {% endif %}
+                {% if advert.weight %}
+                <li class="list-group-item"><strong>Weight:</strong> {{ advert.weight }}</li>
+                {% endif %}
+                {% if advert.shape %}
+                <li class="list-group-item"><strong>Shape:</strong> {{ advert.shape }}</li>
+                {% endif %}
+            </ul>
+
+            <!-- Customer Reviews -->
+            <div class="mt-5">
+                <h4>Customer Reviews</h4>
+                {% if reviews %}
+                {% for review in reviews %}
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="card-title">{{ review.user.username }}</h6>
+                            <p class="text-warning mb-1">
+                                {% for star in "12345"|make_list %}
+                                {% if forloop.counter <= review.rating %} ★ {% else %} ☆ {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p class="card-text">{{ review.comment }}</p>
+
+                            {% if review.image %}
+                            <div class="mb-2">
+                                <img src="{{ review.image.url }}"
+                                     alt="Review Image"
+                                     style="max-width: 150px; border-radius: 8px;">
+                            </div>
+                            {% endif %}
+
+                            <small class="text-muted">Posted on {{ review.created_at|date:"M d, Y" }}</small>
+                        </div>
+
+                        {% if user == review.user %}
+                        <div>
+                            <a href="{% url 'edit_review' review.id %}" class="text-primary me-2" title="Edit">
+                                ✏️
+                            </a>
+                            <a href="{% url 'delete_review' review.id %}" class="text-danger" title="Delete"
+                               onclick="return confirm('Are you sure you want to delete this review?');">
+                                🗑️
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p>No reviews yet. Be the first to review this product!</p>
+                {% endif %}
+
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'add_review' advert.id %}" enctype="multipart/form-data"
+                      class="mt-4">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+                {% else %}
+                <p><a href="{% url 'account_login' %}">Login</a> to leave a review.</p>
+                {% endif %}
+            </div>
+
+            <!-- Similar Products -->
+            <div class="mt-5">
+                <h4>Similar Products</h4>
+                <div class="row">
+                    {% for product in similar_products %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100">
+                            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.title }}">
+                            <div class="card-body text-center">
+                                <h6 class="card-title">{{ product.title }}</h6>
+                                <p class="text-danger">KSh {{ product.price }}</p>
+                                <a href="{% url 'product_detail' product.id %}"
+                                   class="btn btn-sm btn-outline-primary">View</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p>No similar products found.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Seller Info -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <div class="d-flex align-items-center">
+                    {% with advert.seller.shop.images.first as shop_image %}
+                    {% if shop_image %}
+                    <img src="{{ shop_image.image.url }}"
+                         class="rounded-circle me-3" width="60" height="60"
+                         alt="{{ advert.seller.shop_name }}">
+                    {% else %}
+                    <div class="rounded-circle bg-secondary me-3"
+                         style="width:60px;height:60px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">
+                        {{ advert.seller.shop_name|slice:":1" }}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <div class="d-flex align-items-center ">
+                        {% if advert.seller.shop.logo %}
+                        <img src="{{ advert.seller.shop.logo.url }}"
+                             class="rounded-circle me-3 border"
+                             width="35" height="35" alt="{{ advert.seller.shop.shop_name }}">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary me-3"
+                             style="width:35px;height:35px;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">
+                            {{ advert.seller.shop.shop_name|slice:":1" }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h5 class="mb-0">{{ advert.seller.shop_name }}</h5>
+                        <small class="text-muted">Seller</small>
+                    </div>
+                </div>
+                <a href="{% url 'my_shop' seller_id=advert.seller.sellerprofile.id %}"
+                   class="btn btn-outline-dark mt-3 w-100">Visit Shop</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'conversation' advert.seller.id advert.id %}"
+                   class="btn btn-primary mt-2 w-100">
+                    Chat with Seller
+                </a>
+                {% else %}
+                <a href="{% url 'conversation' advert.seller.id advert.id %}"
+                   class="btn btn-primary mt-2 w-100 require-login"
+                   data-bs-toggle="modal"
+                   data-bs-target="#loginModal">
+                    Chat with Seller
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

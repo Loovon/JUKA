@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seller Location - JUKA{% endblock %}
+{% block content %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ GOOGLE_MAPS_API_KEY }}&callback=initMap" async defer></script>
+    <script>
+        function initMap() {
+            var location = { lat: -1.286389, lng: 36.817223 }; // Example: Nairobi
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 12,
+                center: location
+            });
+            var marker = new google.maps.Marker({
+                position: location,
+                map: map
+            });
+        }
+    </script>
+
+
+<body>
+    <h1>Seller Location</h1>
+    <div id="map" style="width:100%;height:500px;"></div>
+</body>
+{% endblock %}

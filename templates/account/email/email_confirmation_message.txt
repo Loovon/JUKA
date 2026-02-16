@@ -1,0 +1,7 @@
+Hi {{ user.username }},
+
+Please confirm your JUKA account by clicking the link below:
+
+{{ activate_url }}
+
+If you did not request this, ignore this email.

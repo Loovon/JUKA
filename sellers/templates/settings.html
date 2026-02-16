@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Shop Settings{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">⚙️ Shop Settings</h2>
+
+    <form method="post" enctype="multipart/form-data" class="card shadow-sm p-4 rounded">
+        {% csrf_token %}
+
+        <!-- GENERAL INFO -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">General Info</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.shop_name.label_tag }}
+                    {{ form.shop_name }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.location.label_tag }}
+                    {{ form.location }}
+                </div>
+                <div class="col-12">
+                    {{ form.description.label_tag }}
+                    {{ form.description }}
+                </div>
+            </div>
+        </div>
+
+        <!-- MEDIA -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">Shop Media</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.logo.label_tag }}
+                    {{ form.logo }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.banner.label_tag }}
+                    {{ form.banner }}
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">Contact Info</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.phone.label_tag }}
+                    {{ form.phone }}
+                </div>
+                <div class="col-12">
+                    {{ form.address.label_tag }}
+                    {{ form.address }}
+                </div>
+                <div class="col-12">
+                    {{ form.delivery_areas.label_tag }}
+                    {{ form.delivery_areas }}
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">Payments</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.payment_number.label_tag }}
+                    {{ form.payment_number }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.bank_account.label_tag }}
+                    {{ form.bank_account }}
+                </div>
+            </div>
+        </div>
+
+        <!-- POLICIES -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">Policies</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    {{ form.refund_policy.label_tag }}
+                    {{ form.refund_policy }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.delivery_policy.label_tag }}
+                    {{ form.delivery_policy }}
+                </div>
+            </div>
+        </div>
+
+        <!-- PREFERENCES -->
+        <div class="mb-4">
+            <h5 class="border-bottom pb-2">Preferences</h5>
+            <div class="row g-3 align-items-center">
+                <div class="col-md-4">
+                    {{ form.active }} {{ form.active.label_tag }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.notify_on_order }} {{ form.notify_on_order.label_tag }}
+                </div>
+                <div class="col-md-4">
+                    {{ form.rank.label_tag }}
+                    {{ form.rank }}
+                </div>
+            </div>
+        </div>
+
+        <!-- SAVE BUTTON -->
+        <div class="text-end">
+            <button type="submit" class="btn btn-danger px-4">💾 Save Settings</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

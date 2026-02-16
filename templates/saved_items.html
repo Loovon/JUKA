@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<!-- Saved Items -->
+<h1>Saved Items</h1>
+<div class="row g-3">
+    {% if items %}
+    {% for saved in items %}
+    {% with advert=saved.advert %}
+    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+        <a href="{% url 'product_detail' advert.id %}"
+           class="text-decoration-none text-dark">
+
+            <div class="card product-card h-100">
+
+                <img src="{{ advert.image.url }}"
+                     alt="{{ advert.title }}"
+                     class="card-img-top">
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ advert.title }}</h5>
+                    <p class="card-price">Ksh {{ advert.price }}</p>
+                </div>
+
+                <div class="card-footer d-flex justify-content-between align-items-center">
+
+                    {% if user.is_authenticated %}
+                    <div class="d-flex gap-2">
+
+                        <!-- SAVE / HEART -->
+                        <a href="{% url 'save_item' advert.id %}"
+                           class="action-btn">
+                            <i class="fas fa-heart text-danger"></i>
+                        </a>
+
+                        <!-- MAKE OFFER -->
+                        <a href="{% url 'conversation' advert.seller.id advert.id %}"
+                           class="action-btn d-flex align-items-center">
+                            <i class="fas fa-envelope text-primary"></i>
+                        </a>
+
+                    </div>
+                    {% else %}
+                    <a href="{% url 'account_login' %}"
+                       class="action-btn">
+                        <i class="fas fa-envelope text-primary"></i>
+                    </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endwith %}
+    {% endfor %}
+    {% else %}
+    <p>You have no saved items yet.</p>
+    {% endif %}
+</div>
+
+
+{% endblock %}

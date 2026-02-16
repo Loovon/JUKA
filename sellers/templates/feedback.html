@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Customer Feedback{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="mb-4">Customer Reviews for Your Products</h2>
+
+    {% if reviews %}
+    {% for review in reviews %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            {% if review.advert.image %}
+            <img src="{{ review.advert.image.url }}" alt="{{ review.advert.title }}"
+                 class="me-2 rounded" style="width:40px; height:40px; object-fit:cover;">
+            {% endif %}
+            <!-- Link to the product detail page -->
+            <h5 class="card-title">
+                <a href="{% url 'product_detail' review.advert.id %}" class="text-decoration-none">
+                    {{ review.advert.title }}
+                </a>
+            </h5>
+            <h6 class="text-muted">
+                By {{ review.user.username }} on {{ review.created_at|date:"M d, Y" }}
+            </h6>
+            <p class="text-warning">
+                {% for i in "12345"|make_list %}
+                {% if forloop.counter <= review.rating %}★{% else %}☆{% endif %}
+                {% endfor %}
+            </p>
+            <p>{{ review.comment }}</p>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p>No reviews yet for your products.</p>
+    {% endif %}
+</div>
+{% endblock %}

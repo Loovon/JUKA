@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 70vh;">
+  <div class="card shadow-lg p-4 text-center" style="max-width: 500px; border-radius: 12px;">
+    <h4 class="text-danger">Confirm Your Email</h4>
+    <p class="mb-3">Click the button below to activate your JUKA account.</p>
+    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+      {% csrf_token %}
+      <button class="btn btn-danger w-100">Confirm</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

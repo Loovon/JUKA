@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2 class="notif-title">Notifications</h2>
+
+    <div class="notif-list">
+        {% for notif in notifications %}
+            <a href="{% url 'mark_notification_read' notif.id %}"
+               class="notif-item {% if not notif.is_read %}unread{% endif %}">
+
+                <div class="notif-icon">
+                    <i class="bi bi-bell-fill"></i>
+                </div>
+
+                <div class="notif-content">
+                    <p class="notif-message">
+                        <i class="fa fa-bell"></i> <!-- notification icon -->
+                        {{ notif.message }}
+                    </p>
+                    <small class="notif-time">{{ notif.timestamp|date:"M d, Y H:i" }}</small>
+                </div>
+
+            </a>
+        {% empty %}
+            <p class="no-notifs">No notifications yet.</p>
+        {% endfor %}
+    </div>
+
+    <style>
+        .notif-title {
+            margin-bottom: 15px;
+        }
+
+        .notif-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .notif-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.2s;
+        }
+
+        .notif-item:hover {
+            background: #f9f9f9;
+        }
+
+        .notif-item.unread {
+            background: #eef5ff;
+            font-weight: bold;
+        }
+
+        .notif-icon {
+            margin-right: 12px;
+            font-size: 20px;
+            color: #007bff;
+        }
+
+        .notif-content {
+            flex: 1;
+        }
+
+        .notif-message {
+            margin: 0;
+        }
+
+        .notif-time {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .no-notifs {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+    </style>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Performance{% endblock %}
+{% block content %}
+    <div class="container my-4">
+        <h2 class="mb-4">Shop Performance Dashboard</h2>
+
+        <!-- KPIs -->
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5>Total Sales</h5>
+                    <p class="fs-4 text-success">KSh {{ total_sales }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5>Active Listings</h5>
+                    <p class="fs-4">{{ active_ads }}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow-sm p-3">
+                    <h5>Forecast (Next Month)</h5>
+                    <p class="fs-4 text-primary">KSh {{ forecast }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sales Chart -->
+        <div class="card p-3 mb-4 shadow-sm">
+            <h5>Monthly Sales</h5>
+            <canvas id="salesChart"></canvas>
+        </div>
+
+        <!-- Users Chart -->
+        <div class="card p-3 mb-4 shadow-sm">
+            <h5>Active Users (Last 30 Days)</h5>
+            <canvas id="usersChart"></canvas>
+        </div>
+
+        <!-- Forecast Chart -->
+        <div class="card p-3 mb-4 shadow-sm">
+            <h5>Sales Forecast</h5>
+            <canvas id="forecastChart"></canvas>
+        </div>
+    </div>
+    <!-- Upload Section -->
+    <div class="mt-5">
+        <h4>Upload Data (Image/PDF)</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="file" name="document" class="form-control mb-3" required>
+            <button type="submit" class="btn btn-primary">Analyze</button>
+        </form>
+
+        {% if extracted_text %}
+            <div class="mt-3 p-3 border rounded bg-light">
+                <h5>Extracted Text:</h5>
+                <pre>{{ extracted_text }}</pre>
+            </div>
+        {% endif %}
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const salesCtx = document.getElementById('salesChart').getContext('2d');
+new Chart(salesCtx, {
+  type: 'line',
+  data: {
+    labels: {{ months|safe }},
+    datasets: [{
+      label: 'Sales (KSh)',
+      data: {{ sales_data|safe }},
+      borderColor: 'red',
+      fill: false,
+      tension: 0.3
+    }]
+  }
+});
+
+const usersCtx = document.getElementById('usersChart').getContext('2d');
+new Chart(usersCtx, {
+  type: 'bar',
+  data: {
+    labels: {{ user_dates|safe }},
+    datasets: [{
+      label: 'Active Users',
+      data: {{ user_counts|safe }},
+      backgroundColor: 'rgba(54, 162, 235, 0.7)'
+    }]
+  }
+});
+
+const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+new Chart(forecastCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Forecast', 'Gap'],
+    datasets: [{
+      data: [{{ forecast }}, {{ total_sales }}],
+      backgroundColor: ['#36A2EB', '#E0E0E0']
+    }]
+  }
+});
+</script>
+{% endblock %}

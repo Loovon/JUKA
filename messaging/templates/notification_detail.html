@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="notif-detail">
+  <div class="notif-card">
+    <div class="notif-header">
+      <i class="bi bi-bell-fill notif-icon"></i>
+      <h3>Notification</h3>
+    </div>
+
+    <div class="notif-body">
+      <p class="notif-message">{{ notif.message }}</p>
+      <small class="notif-time">{{ notif.timestamp|date:"M d, Y H:i" }}</small>
+    </div>
+
+    <div class="notif-footer">
+      <a href="{% url 'notifications' %}" class="btn btn-secondary">← Back to Notifications</a>
+      {% if notif.get_link %}
+        <a href="{{ notif.get_link }}" class="btn btn-primary">Go to related page</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.notif-detail {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+.notif-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  width: 500px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.notif-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.notif-header h3 {
+  margin: 0 0 0 10px;
+}
+.notif-icon {
+  font-size: 24px;
+  color: #007bff;
+}
+.notif-body {
+  margin-bottom: 20px;
+}
+.notif-message {
+  font-size: 16px;
+  margin: 0 0 10px 0;
+}
+.notif-time {
+  font-size: 13px;
+  color: #777;
+}
+.notif-footer {
+  display: flex;
+  justify-content: space-between;
+}
+.btn {
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 5px;
+  font-size: 14px;
+}
+.btn-primary {
+  background: #007bff;
+  color: #fff;
+}
+.btn-primary:hover {
+  background: #0056b3;
+}
+.btn-secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+</style>
+{% endblock %}

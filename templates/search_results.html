@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Search Results{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+
+            <!-- Sidebar Filters -->
+            <div class="col-md-3 category-sidebar">
+                <h5 class="mb-3">Filter Results</h5>
+
+                <!-- Search refinement -->
+                <form method="get" action="{% url 'search' %}">
+                    <input type="hidden" name="q" value="{{ query }}">
+
+                    <!-- Price Filter -->
+                    <div class="mb-3">
+                        <label class="form-label">Price Range</label>
+                        <div class="d-flex">
+                            <input type="number" name="min_price" class="form-control me-2" placeholder="Min"
+                                   value="{{ request.GET.min_price }}">
+                            <input type="number" name="max_price" class="form-control" placeholder="Max"
+                                   value="{{ request.GET.max_price }}">
+                        </div>
+                    </div>
+
+                    <!-- Condition -->
+                    <div class="mb-3">
+                        <label class="form-label">Condition</label>
+                        <select name="condition" class="form-select">
+                            <option value="">Any</option>
+                            <option value="new" {% if request.GET.condition == "new" %}selected{% endif %}>New</option>
+                            <option value="used" {% if request.GET.condition == "used" %}selected{% endif %}>Used
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g Nairobi"
+                               value="{{ request.GET.location }}">
+                    </div>
+
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <label class="form-label">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="">All Categories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}"
+                                        {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100">Apply Filters</button>
+                </form>
+            </div>
+
+            <!-- Search Results -->
+            <div class="col-md-9">
+                <h4 class="mb-4">Results for "{{ query }}" ({{ results.count }})</h4>
+
+                {% if results %}
+                    <div class="row g-3">
+                        {% for advert in results %}
+                            <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                                <a href="{% url 'product_detail' advert.id %}" class="text-decoration-none text-dark">
+                                    <div class="card product-card h-100">
+                                        <img src="{{ advert.image.url }}" alt="{{ advert.title }}" class="card-img-top">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ advert.title }}</h5>
+                                            <p class="card-price text-danger">Ksh {{ advert.price }}</p>
+                                        </div>
+                                        <div class="card-footer bg-white d-flex justify-content-between">
+                                            {% if user.is_authenticated %}
+                                                <div class="btn-group">
+                                                    {% if advert.id in user_saved_ids %}
+                                                        <a href="{% url 'save_item' advert.id %}"
+                                                           class="btn btn-sm btn-outline-danger">
+                                                            <i class="fas fa-heart text-danger"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a href="{% url 'save_item' advert.id %}"
+                                                           class="btn btn-sm btn-outline-danger">
+                                                            <i class="far fa-heart"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                    <a href="{% url 'add_to_cart' advert.id %}"
+                                                       class="btn btn-sm btn-outline-success" title="Add to Cart">
+                                                        <i class="fas fa-shopping-cart">Add To Cart</i>
+                                                    </a>
+                                                </div>
+                                            {% else %}
+                                                <a href="{% url 'account_login' %}"
+                                                   class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-shopping-cart">Add To Cart</i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">No products found for your search.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
