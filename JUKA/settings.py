@@ -24,12 +24,13 @@ os.environ[
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r7)lpmrg38=v-8uubyuo(ftb4=&4atb!x=@q@&cv6hf*0=aqkg'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-key-for-local')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 
 # Application definition
 
