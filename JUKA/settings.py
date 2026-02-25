@@ -17,9 +17,7 @@ from django.template.context_processors import static
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-os.environ[
-    "GOOGLE_APPLICATION_CREDENTIALS"] = r"C:\Users\HP EliteBook\PycharmProjects\Creditials\juka-468915-7757dc5bced0.json"
-
+GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 

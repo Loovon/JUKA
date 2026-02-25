@@ -23,7 +23,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('home/', views.home, name='home'),
+    path('', core_views.home, name='home'),  # 👈 main homepage
+
+    # Optional /home route
+    path('home/', core_views.home, name='home'),
     path('admin/', admin.site.urls),
     path('products/', include('products.urls')),
     path('accounts/', include('allauth.urls')),
@@ -34,7 +37,7 @@ urlpatterns = [
 
 
     path("search/", views.search_results, name="search"),
-    path('', include('customers.urls')),
+    path('customers/', include('customers.urls')),
     path("messages/", include("messaging.urls")),
 
 ]
