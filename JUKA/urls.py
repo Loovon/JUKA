@@ -23,10 +23,10 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', core_views.home, name='home'),  # 👈 main homepage
+    path('', views.home, name='home'),  # 👈 main homepage
 
     # Optional /home route
-    path('home/', core_views.home, name='home'),
+    path('home/', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('products/', include('products.urls')),
     path('accounts/', include('allauth.urls')),
